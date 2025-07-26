@@ -1,0 +1,19 @@
+{
+  "name": "issue2notion",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "import": "tsx scripts/import.ts"
+  },
+  "dependencies": {
+    "@notionhq/client": "^4.0.1",
+    "axios": "^1.11.0",
+    "octokit": "^5.0.3"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
