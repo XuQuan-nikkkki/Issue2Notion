@@ -1,4 +1,5 @@
 import { Client, PageObjectResponse } from "@notionhq/client";
+import { QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 import { config } from "../config";
 import { GithubIssue } from "./types";
 import { fetchRepo } from "./github";
@@ -35,6 +36,22 @@ const _getPageIcon = (page: PageObjectResponse) => {
   }
   return undefined;
 };
+
+export async function checkIfIssueExists(issueUrl: string): Promise<boolean> {
+  const { rawIssuesDbId } = config.notion;
+
+  const response = await notion.databases.query({
+    database_id: rawIssuesDbId,
+    filter: {
+      property: "URL",
+      url: {
+        equals: issueUrl,
+      },
+    },
+  });
+
+  return response.results.length > 0;
+}
 
 export async function findOrCreateRepo(): Promise<string> {
   const { repo } = config.github;
@@ -97,20 +114,18 @@ export const createIssueInNotion = async (
 ) => {
   const { rawIssuesDbId, rawIssueTemplatePageId } = config.notion;
 
-  console.log(`🔎 ${index + 1} - Checking if issue 「${issue.title}」 exists in Notion...`);
-  const existingIssues = await _queryInDatabase(rawIssuesDbId, {
-    property: "URL",
-    url: {
-      equals: issue.html_url,
-    },
-  });
-
-  if (existingIssues.length > 0) {
+  console.log(
+    `🔎 ${index + 1} - Checking if issue 「${issue.title}」 exists in Notion...`
+  );
+  const isIssueExists = await checkIfIssueExists(issue.html_url);
+  if (isIssueExists) {
     console.log(`    ⏩ Issue 「${issue.title}」 already exists in Notion.`);
     return;
   }
 
-  console.log(`    ➕ Issue 「${issue.title}」 not found, creating new entry...`);
+  console.log(
+    `    ➕ Issue 「${issue.title}」 not found, creating new entry...`
+  );
   const templatePage = (await _queryDatabasePage(
     rawIssueTemplatePageId
   )) as PageObjectResponse;
@@ -146,3 +161,50 @@ export const createIssueInNotion = async (
   });
   console.log(`    ✅ Created issue entry: ${issue.title}`);
 };
+
+const USERS_DB_ID = process.env.NOTION_USERS_DB_ID!;
+
+// export async function getOrCreateUser(
+//   githubLogin: string,
+//   profileUrl: string
+// ): Promise<string> {
+//   const searchRes: QueryDatabaseResponse = await notion.databases.query({
+//     database_id: USERS_DB_ID,
+//     filter: {
+//       property: "URL",
+//       url: {
+//         equals: profileUrl,
+//       },
+//     },
+//   });
+
+//   if (searchRes.results.length > 0) {
+//     return searchRes.results[0].id;
+//   }
+
+//   const userPage = await notion.pages.create({
+//     parent: { database_id: USERS_DB_ID },
+//     properties: {
+//       Name: {
+//         title: [{ text: { content: githubLogin } }],
+//       },
+//       URL: {
+//         url: profileUrl,
+//       },
+//     },
+//   });
+
+//   return userPage.id;
+// }
+
+
+// async function setSelfReference(pageId: string) {
+//   await notion.pages.update({
+//     page_id: pageId,
+//     properties: {
+//       "Self Reference": {
+//         relation: [{ id: pageId }],
+//       },
+//     },
+//   });
+// }
