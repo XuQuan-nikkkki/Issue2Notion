@@ -91,6 +91,12 @@ export async function findOrCreateRepo(): Promise<string> {
           id: r.id,
         })),
       },
+      Status: {
+        type: "status",
+        status: {
+          name: "In Progress",
+        },
+      },
     },
     icon: _getPageIcon(templatePage),
   });
@@ -196,7 +202,6 @@ const USERS_DB_ID = process.env.NOTION_USERS_DB_ID!;
 
 //   return userPage.id;
 // }
-
 
 // async function setSelfReference(pageId: string) {
 //   await notion.pages.update({
