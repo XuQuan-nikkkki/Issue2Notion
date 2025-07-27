@@ -19,7 +19,9 @@ export const fetchAllIssues = async () => {
 
     if (response.data.length === 0) break;
 
-    const onlyIssues = response.data.filter((issue) => !issue.pull_request);
+    const onlyIssues = response.data.filter(
+      (issue: { pull_request?: unknown }) => !issue.pull_request
+    );
     issues.push(...onlyIssues);
     console.log(`Fetched page ${page} with ${onlyIssues.length} issues.`);
     page++;
