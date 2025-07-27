@@ -11,15 +11,31 @@ const requireEnv = (key: string): string => {
 
 export const config = {
   github: {
-    token: requireEnv("GITHUB_TOKEN"),
-    owner: requireEnv("GITHUB_OWNER"),
-    repo: requireEnv("GITHUB_REPO"),
+    get token() {
+      return requireEnv("GITHUB_TOKEN");
+    },
+    get owner() {
+      return requireEnv("GITHUB_OWNER");
+    },
+    get repo() {
+      return requireEnv("GITHUB_REPO");
+    },
   },
   notion: {
-    token: requireEnv("NOTION_TOKEN"),
-    reposDbId: requireEnv("NOTION_REPOS_DB_ID"),
-    rawIssuesDbId: requireEnv("NOTION_RAW_ISSUES_DB_ID"),
-    repoTempatePageId: requireEnv("NOTION_REPO_TEMPLATE_PAGE_ID"),
-    rawIssueTemplatePageId: requireEnv("NOTION_RAW_ISSUE_TEMPLATE_PAGE_ID"),
+    get token() {
+      return requireEnv("NOTION_TOKEN");
+    },
+    get reposDbId() {
+      return requireEnv("NOTION_REPOS_DB_ID");
+    },
+    get rawIssuesDbId() {
+      return requireEnv("NOTION_RAW_ISSUES_DB_ID");
+    },
+    get repoTempatePageId() {
+      return requireEnv("NOTION_REPO_TEMPLATE_PAGE_ID");
+    },
+    get rawIssueTemplatePageId() {
+      return requireEnv("NOTION_RAW_ISSUE_TEMPLATE_PAGE_ID");
+    },
   },
 };

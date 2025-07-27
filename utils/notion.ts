@@ -53,23 +53,24 @@ export async function checkIfIssueExists(issueUrl: string): Promise<boolean> {
   return response.results.length > 0;
 }
 
-export async function findOrCreateRepo(): Promise<string> {
-  const { repo } = config.github;
-
+export const findOrCreateRepo = async (
+  repoName: string,
+  repoOwner: string
+): Promise<string> => {
   const results = await _queryInDatabase(config.notion.reposDbId, {
     property: "Name",
     rich_text: {
-      equals: repo,
+      equals: repoName,
     },
   });
 
   if (results.length > 0) {
-    console.log(`⏩ Repo 「${repo}」 already exists in Notion.\n`);
+    console.log(`⏩ Repo 「${repoName}」 already exists in Notion.\n`);
     return results[0].id;
   }
 
-  console.log(`➕ Repo 「${repo}」 not found, creating new entry...`);
-  const repoInfo = await fetchRepo();
+  console.log(`➕ Repo 「${repoName}」 not found, creating new entry...`);
+  const repoInfo = await fetchRepo(repoName, repoOwner);
   const { html_url, created_at } = repoInfo;
   const { repoTempatePageId, reposDbId } = config.notion;
 
@@ -81,7 +82,7 @@ export async function findOrCreateRepo(): Promise<string> {
   const created = await notion.pages.create({
     parent: { database_id: reposDbId },
     properties: {
-      Name: { title: [{ text: { content: repo } }] },
+      Name: { title: [{ text: { content: repoName } }] },
       URL: { url: html_url },
       "Start Date": { date: { start: created_at } },
       Stats: {
@@ -103,7 +104,7 @@ export async function findOrCreateRepo(): Promise<string> {
 
   console.log(`✅ Created repo entry: ${created.id}\n`);
   return created.id;
-}
+};
 
 export const getNotionDatabaseSchema = async (
   name: string,

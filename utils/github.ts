@@ -30,9 +30,7 @@ export const fetchAllIssues = async () => {
   return issues;
 };
 
-export const fetchRepo = async () => {
-  const { owner, repo } = config.github;
-
+export const fetchRepo = async (repo: string, owner: string) => {
   const response = await octokit.rest.repos.get({
     owner,
     repo,

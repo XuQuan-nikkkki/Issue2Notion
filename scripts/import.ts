@@ -16,7 +16,7 @@ async function main() {
   }
 
   console.log(`🔎 Checking if repo 「${repo}」 exists in Notion...`);
-  const repoDbId = await findOrCreateRepo();
+  const repoDbId = await findOrCreateRepo(repo, owner);
 
   console.log("🔄 Syncing issues to Notion...");
   for (const [index, issue] of issues.entries()) {

@@ -13,10 +13,13 @@ export default async function handler(
   const payload = req.body;
 
   if (event === "issues" && payload.action === "opened") {
-    const { issue } = payload;
+    const { issue, repository } = payload;
 
     try {
-      const repoDbId = await findOrCreateRepo();
+      const repoName = repository.name;
+      const repoOwner = repository.owner.login;
+
+      const repoDbId = await findOrCreateRepo(repoName, repoOwner);
       const newPageId = await createIssueInNotion(issue, repoDbId, 0);
       return res.status(200).json({ success: true, pageId: newPageId });
     } catch (err) {
